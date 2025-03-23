@@ -44,21 +44,27 @@ client.on("messageCreate", async (message) => {
   }
 
   if(message.content.toLocaleLowerCase().startsWith("!daily")) {
-    const check = await db.get(`dailyCheck_${message.author.id}`);
-    const timeout = 86400000;
-    const timePassed = Date.now() - check;
-    if (check !== null && timePassed < timeout) {
-      const ms = require("pretty-ms");
-      const timeLeft = ms(timeout - timePassed);
-      message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`)
-      return;
-    } else {
-      let reward = 250
-      let currentBalance = await db.get(`wallet_${message.author.id}`)
-      if(currentBalance === null || typeof currentBalance === 'object') currentBalance = 0;
-      message.channel.send("Begyűjtötted a napi pénzed! +250💵")
-      await db.set(`wallet_${message.author.id}`, currentBalance + reward)
-      await db.set(`dailyCheck_${message.author.id}`, Date.now())
+    try {
+      const check = await db.get(`dailyCheck_${message.author.id}`);
+      const timeout = 86400000;
+      
+      if (check && Date.now() - check < timeout) {
+        const ms = require("pretty-ms");
+        const timeLeft = ms(timeout - (Date.now() - check));
+        return message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`);
+      }
+
+      let currentBalance = await db.get(`wallet_${message.author.id}`);
+      currentBalance = currentBalance === null || typeof currentBalance === 'object' ? 0 : currentBalance;
+      
+      const reward = 250;
+      await db.set(`wallet_${message.author.id}`, currentBalance + reward);
+      await db.set(`dailyCheck_${message.author.id}`, Date.now());
+      
+      message.channel.send(`Begyűjtötted a napi pénzed! +${reward}💵`);
+    } catch (error) {
+      console.error("Hiba a daily parancsban:", error);
+      message.channel.send("Hiba történt a parancs végrehajtása közben.");
     }
   }
 });
