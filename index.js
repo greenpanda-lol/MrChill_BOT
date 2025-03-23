@@ -22,7 +22,7 @@ const client = new Client({
 
 // parancsok:
 
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
   if (message.content === "ping") {
     message.channel.send("pong!");
   }
