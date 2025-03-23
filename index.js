@@ -46,7 +46,7 @@ client.on("messageCreate", async (message) => {
   if(message.content.toLocaleLowerCase().startsWith("!daily")) {
     const check = await db.get(`dailyCheck_${message.author.id}`);
     const timeout = 86400000;
-    if (check !== null && timeout - (Date.now() - check > 0)) {
+    if (check !== null && timeout - (Date.now() - check) > 0) {
       const ms = require("pretty-ms");
       const timeLeft = ms(timeout - (Date.now() - check));
       message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`)
