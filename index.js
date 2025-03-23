@@ -58,7 +58,6 @@ client.on("messageCreate", async (message) => {
       await db.set(`dailyCheck_${message.author.id}`, Date.now())
     }
   }
-  }
 });
 
 client.on("messageCreate", (message) => {
