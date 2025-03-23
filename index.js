@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const { Client, GatewayIntentBits } = require("discord.js");
+const Database = require("@replit/database");
+const db = new Database();
 
 app.listen(3000, () => {
   console.log("Project is running!");
@@ -18,9 +20,21 @@ const client = new Client({
   ],
 });
 
+// parancsok:
+
 client.on("messageCreate", (message) => {
   if (message.content === "ping") {
     message.channel.send("pong!");
+  }
+  
+  if(message.content.toLocaleLowerCase().startsWith("!bal")) {
+    let balance = await db.get(`wallet_${message.author.id}`);
+    let bank = await db.get(`bank_${message.author.id}`);
+
+    if(balance === null) balance = 0;
+    if(bank === null) bank = 0;
+    
+    message.channel.send(`A készpénzed: **${balance}** és a bankszámlád: **${bank}**`) 
   }
 });
 
@@ -30,12 +44,6 @@ client.on("messageCreate", (message) => {
   }
 });
 
-client.on("interactionCreate", async interaction => {
-  if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === "ping") {
-    await interaction.reply("pong!");
-  }
-});
+// parancsok vége
 
 client.login(process.env.token);
