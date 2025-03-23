@@ -40,7 +40,23 @@ client.on("messageCreate", async (message) => {
       .setColor("Random")
       .setThumbnail(message.author.displayAvatarURL({dynamic: true}));
     
-    message.channel.send({embeds: [moneyEmbed]}); 
+    message.channel.send({embeds: [moneyEmbed]});
+
+  if(message.content.toLocaleLowerCase().startsWith("!daily")) {
+    const check = await db.get(`dailyCheck_${message.author.id}`);
+    const timeout = 86400000;
+    if (check !== null && timeout - (date.now() - check > 0)) {
+      const ms = require("pretty-ms");
+      const timeLeft = ms(timeout - (date.now() - check));
+      message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`)
+    } else {
+      let reward = 250
+      let currentBalance = await db.get(`wallet_${message.author.id}`)
+      message.channel.send("Begyűjtötted a napi pénzed! +250💵")
+      await.db.set(`wallet_${message.author.id}`, currentBalance + reward)
+      await.db.set(`dailyCheck_${message.author.id}`, date.now())
+    }
+  }
   }
 });
 
