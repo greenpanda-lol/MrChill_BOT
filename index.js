@@ -53,6 +53,7 @@ client.on("messageCreate", async (message) => {
     } else {
       let reward = 250
       let currentBalance = await db.get(`wallet_${message.author.id}`)
+      if(currentBalance === null || typeof currentBalance === 'object') currentBalance = 0;
       message.channel.send("Begyűjtötted a napi pénzed! +250💵")
       await db.set(`wallet_${message.author.id}`, currentBalance + reward)
       await db.set(`dailyCheck_${message.author.id}`, Date.now())
