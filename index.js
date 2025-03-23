@@ -31,10 +31,10 @@ client.on("messageCreate", async (message) => {
     let balance = await db.get(`wallet_${message.author.id}`);
     let bank = await db.get(`bank_${message.author.id}`);
 
-    if(balance === null) balance = 0;
-    if(bank === null) bank = 0;
+    if(balance === null || typeof balance === 'object') balance = 0;
+    if(bank === null || typeof bank === 'object') bank = 0;
     
-    message.channel.send(`A készpénzed: **${balance}** és a bankszámlád: **${bank}**`) 
+    message.channel.send(`A készpénzed: **${Number(balance)}** és a bankszámlád: **${Number(bank)}**`) 
   }
 });
 
