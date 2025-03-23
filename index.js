@@ -47,14 +47,14 @@ client.on("messageCreate", async (message) => {
     const timeout = 86400000;
     if (check !== null && timeout - (date.now() - check > 0)) {
       const ms = require("pretty-ms");
-      const timeLeft = ms(timeout - (date.now() - check));
+      const timeLeft = ms(timeout - (Date.now() - check));
       message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`)
     } else {
       let reward = 250
       let currentBalance = await db.get(`wallet_${message.author.id}`)
       message.channel.send("Begyűjtötted a napi pénzed! +250💵")
-      await.db.set(`wallet_${message.author.id}`, currentBalance + reward)
-      await.db.set(`dailyCheck_${message.author.id}`, date.now())
+      await db.set(`wallet_${message.author.id}`, currentBalance + reward)
+      await db.set(`dailyCheck_${message.author.id}`, Date.now())
     }
   }
   }
