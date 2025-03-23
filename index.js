@@ -38,4 +38,12 @@ client.on("interactionCreate", async interaction => {
   }
 });
 
+client.once('ready', () => {
+  console.log(`Bot bejelentkezett mint: ${client.user.tag}`);
+});
+
+client.on('error', error => {
+  console.error('Discord bot hiba:', error);
+});
+
 client.login(process.env.token);
