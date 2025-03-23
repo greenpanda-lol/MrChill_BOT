@@ -19,4 +19,7 @@ const slashRegister = async () => {
     console.error(error)
   }
 }
+
+// Call the function to register commands
 slashRegister()
+console.log("Started deploying slash commands...")
