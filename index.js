@@ -46,10 +46,12 @@ client.on("messageCreate", async (message) => {
   if(message.content.toLocaleLowerCase().startsWith("!daily")) {
     const check = await db.get(`dailyCheck_${message.author.id}`);
     const timeout = 86400000;
-    if (check !== null && timeout - (Date.now() - check) > 0) {
+    const timePassed = Date.now() - check;
+    if (check !== null && timePassed < timeout) {
       const ms = require("pretty-ms");
-      const timeLeft = ms(timeout - (Date.now() - check));
+      const timeLeft = ms(timeout - timePassed);
       message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`)
+      return;
     } else {
       let reward = 250
       let currentBalance = await db.get(`wallet_${message.author.id}`)
