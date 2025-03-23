@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const Database = require("@replit/database");
 const db = new Database();
 
@@ -34,14 +34,13 @@ client.on("messageCreate", async (message) => {
     if(balance === null || typeof balance === 'object') balance = 0;
     if(bank === null || typeof bank === 'object') bank = 0;
     let currency = "💵";
-    let moneyEmbed = new Discord.MessageEmbed()
-    .setTitle(message.author.username + " pénze")
-    .setDescription(`Készpénzed: ${balance}${currency}\nBankszámlád: ${bank}${currency}`)
-    .setColor("RANDOM")
-    .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
-    message.channel.send({embeds: [moneyEmbed]});
+    let moneyEmbed = new EmbedBuilder()
+      .setTitle(message.author.username + " pénze")
+      .setDescription(`Készpénzed: ${balance}${currency}\nBankszámlád: ${bank}${currency}`)
+      .setColor("Random")
+      .setThumbnail(message.author.displayAvatarURL({dynamic: true}));
     
-    message.channel.send(`A készpénzed: **${Number(balance)}** és a bankszámlád: **${Number(bank)}**`) 
+    message.channel.send({embeds: [moneyEmbed]}); 
   }
 });
 
