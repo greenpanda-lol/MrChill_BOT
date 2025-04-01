@@ -1,16 +1,6 @@
 const express = require("express");
+const { Client, GatewayIntentBits } = require("discord.js");
 const app = express();
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
-const Database = require("@replit/database");
-const db = new Database();
-
-app.listen(3000, () => {
-  console.log("Project is running!");
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello world!");
-});
 
 const client = new Client({
   intents: [
@@ -20,61 +10,60 @@ const client = new Client({
   ],
 });
 
-// parancsok:
+client.on("ready", () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setPresence({ activities: [{ name: "!help" }], status: "dnd" });
+});
+
+const hugGifs = [
+  "https://media.giphy.com/media/l2QDM9Jnim1YVILXa/giphy.gif",
+  "https://media.giphy.com/media/od5H3PmEG5EVq/giphy.gif",
+  "https://media.giphy.com/media/3M4NpbLCTxBqU/giphy.gif",
+];
 
 client.on("messageCreate", async (message) => {
   if (message.content === "ping") {
     message.channel.send("pong!");
-  }
-  
-  if(message.content.toLocaleLowerCase().startsWith("!bal")) {
-    let balance = await db.get(`wallet_${message.author.id}`);
-    let bank = await db.get(`bank_${message.author.id}`);
-
-    if(balance === null || typeof balance === 'object') balance = 0;
-    if(bank === null || typeof bank === 'object') bank = 0;
-    let currency = "💵";
-    let moneyEmbed = new EmbedBuilder()
-      .setTitle(message.author.username + " pénze")
-      .setDescription(`Készpénzed: ${balance}${currency}\nBankszámlád: ${bank}${currency}`)
-      .setColor("Random")
-      .setThumbnail(message.author.displayAvatarURL({dynamic: true}));
-    
-    message.channel.send({embeds: [moneyEmbed]});
-  }
-
-  if(message.content.toLocaleLowerCase().startsWith("!daily")) {
-    try {
-      const check = await db.get(`dailyCheck_${message.author.id}`);
-      const timeout = 86400000;
-      
-      if (check && Date.now() - check < timeout) {
-        const ms = require("pretty-ms");
-        const timeLeft = ms(timeout - (Date.now() - check));
-        return message.channel.send(`Már begyűjtötted a napi pénzed. Próbáld újra ${timeLeft} múlva!`);
-      }
-
-      let currentBalance = await db.get(`wallet_${message.author.id}`);
-      currentBalance = currentBalance === null || typeof currentBalance === 'object' ? 0 : currentBalance;
-      
-      const reward = 250;
-      await db.set(`wallet_${message.author.id}`, currentBalance + reward);
-      await db.set(`dailyCheck_${message.author.id}`, Date.now());
-      
-      message.channel.send(`Begyűjtötted a napi pénzed! +${reward}💵`);
-    } catch (error) {
-      console.error("Hiba a daily parancsban:", error);
-      message.channel.send("Hiba történt a parancs végrehajtása közben.");
-    }
-  }
-});
-
-client.on("messageCreate", (message) => {
-  if (message.content === "pong") {
+  } else if (message.content === "!help") {
+    message.channel.send("hamarosan");
+  } else if (message.content === "pong") {
     message.channel.send("ping!");
+  } else if (message.content === "!netfit") {
+    message.channel.send(
+      "A netfit 20 méteres ingafutás tesztjében fokozatosan emelkedő sebességű futással kell a kijelölt 20 méteres távokat teljesíteni. Két hangjelzés között *tünn* kell átfutni az egyik vonaltól a másikig. Vagyis a hangjelzésekkel egy időben kell megfordulni. A teszt lassú sebességű futással kezdődik, majd egy percenként fokozatosan gyorsul, amit egy másik hangjelzés fog jelezni *speed up*. A teszt során mindig egyenes vonalban fuss oda-vissza. Ha a második alkalommal nem tudod elérni a túloldalat a hangjelzésig, akkor véget ér számodra a teszt. Törekedj arra, hogy minél több távot teljesíts! Álljatok fel a rajtvonalnál! *zene* Felkészülni, start!",
+    );
+  } else if (message.content.startsWith === "!love") {
+    const args = message.content.split(" ").slice(1);
+    let response = " ";
+
+    if (args.length > 0) {
+      const person = args.join(" ");
+      response =
+        "🤗${message.author.mention} ölelést küld ${person}-nak/nek!❤️";
+    } else if (message.content.startsWith("!love")) {
+        const args = message.content.split(" ").slice(1);
+        let response = "";
+
+        if (args.length > 0) {
+            const person = args.join(" ");
+            response = `🤗 <@${message.author.id}> ölelést küld **${person}**-nak/nek! ❤️`;
+        } else {
+            response = "Meg kell adnod valakit, akinek ölelést szeretnél küldeni!";
+        }
+
+        const gif = hugGifs[Math.floor(Math.random() * hugGifs.length)];
+        message.channel.send(`${response}\n${gif}`);
+    }
+
   }
 });
 
-// parancsok vége
+app.listen(3000, () => {
+  console.log("Project is running!");
+});
+
+app.get("/", (req, res) => {
+  res.send("Hello world!");
+});
 
 client.login(process.env.token);
