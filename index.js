@@ -21,6 +21,12 @@ const hugGifs = [
   "https://media.giphy.com/media/3M4NpbLCTxBqU/giphy.gif",
 ];
 
+const fightGifs = [
+  "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGd6eWtyNTcyenpxeDJyOGxzbmpjN3Z2dTJzMzl4cGpjaDZwcms1OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3ohc0QQkTH6YK8g4zS/giphy.gif",
+  "http://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmI5b2VjYXFvbDA4MDUwMGpreG5jNzh1ZXpqd2F1czR5cWhiYW9mcSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rcRwO8GMSfNV6/giphy.gif",
+  "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTUyMGJieDM3Ym44MHhod3Izdjk1YmEyNTFrZmdxMmJ6NnNnOGRrbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w5FSoU86sXRFm/giphy.gif",
+];
+
 client.on("messageCreate", async (message) => {
   if (message.content === "ping") {
     message.channel.send("pong!");
@@ -43,7 +49,33 @@ client.on("messageCreate", async (message) => {
       response = "Meg kell adnod valakit, akinek ölelést szeretnél küldeni!";
     }
 
-    const gif = hugGifs[Math.floor(Math.random() * hugGifs.length)];
+    const gif = hugGifs[Math.floor(Math.random() * fightGifs.length)];
+    message.channel.send(`${response}\n${gif}`);
+  } else if (message.content.startsWith("!fight")) {
+    const args = message.content.split(" ").slice(1);
+    let response = "";
+
+    if (args.length > 0) {
+      const person = args.join(" ");
+      response = `🔪 <@${message.author.id}> megveri **${person}**-t! 👊`;
+    } else {
+      response = "Meg kell adnod valakit, akinek verést szeretnél küldeni!";
+    }
+
+    const gif = fightGifs[Math.floor(Math.random() * fightGifs.length)];
+    message.channel.send(`${response}\n${gif}`);
+  } else if (message.content.startsWith("!bunyó")) {
+    const args = message.content.split(" ").slice(1);
+    let response = "";
+
+    if (args.length > 1) {
+      const [fighter1, fighter2] = args;
+      response = `💣Emberek! ${fighter1} és ${fighter2} bunyózni fog! Verd meg! Verd meg!🗣️`;';
+    } else {
+      response = "Meg kell adnod két embert!";
+    }
+
+    const gif = fightGifs[Math.floor(Math.random() * fightGifs.length)];
     message.channel.send(`${response}\n${gif}`);
   }
 });
